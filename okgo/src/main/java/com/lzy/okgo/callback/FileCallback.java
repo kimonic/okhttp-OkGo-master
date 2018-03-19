@@ -31,8 +31,8 @@ import okhttp3.Response;
  * ================================================
  */
 public abstract class FileCallback extends AbsCallback<File> {
-
-    private FileConvert convert;    //文件转换类
+    /**文件转换类*/
+    private FileConvert convert;
 
     public FileCallback() {
         this(null);
@@ -47,6 +47,7 @@ public abstract class FileCallback extends AbsCallback<File> {
         convert.setCallback(this);
     }
 
+    /**将okhttp3的响应体转化为文件类型*/
     @Override
     public File convertResponse(Response response) throws Throwable {
         File file = convert.convertResponse(response);

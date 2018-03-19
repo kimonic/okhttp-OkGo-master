@@ -35,7 +35,9 @@ public class BitmapConvert implements Converter<Bitmap> {
 
     private int maxWidth;
     private int maxHeight;
+    /**默认配置为argb8888*/
     private Bitmap.Config decodeConfig;
+    /**默认配置等比缩放,保持宽高比*/
     private ImageView.ScaleType scaleType;
 
     public BitmapConvert() {
@@ -53,6 +55,7 @@ public class BitmapConvert implements Converter<Bitmap> {
         this.scaleType = scaleType;
     }
 
+    /**将okhttp3的响应体转化为bitmap*/
     @Override
     public Bitmap convertResponse(Response response) throws Throwable {
         ResponseBody body = response.body();
@@ -60,6 +63,12 @@ public class BitmapConvert implements Converter<Bitmap> {
         return parse(body.bytes());
     }
 
+    /**
+     * 将响应体转化为bitmap图片
+     * @param byteArray   body的数组
+     * @return  bitmap
+     * @throws OutOfMemoryError  内存溢出
+     */
     private Bitmap parse(byte[] byteArray) throws OutOfMemoryError {
         BitmapFactory.Options decodeOptions = new BitmapFactory.Options();
         Bitmap bitmap;
@@ -69,17 +78,19 @@ public class BitmapConvert implements Converter<Bitmap> {
         } else {
             decodeOptions.inJustDecodeBounds = true;
             BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length, decodeOptions);
-            int actualWidth = decodeOptions.outWidth;
-            int actualHeight = decodeOptions.outHeight;
+            int actualWidth = decodeOptions.outWidth;//图片实际宽度
+            int actualHeight = decodeOptions.outHeight;//图片实际高度
 
             int desiredWidth = getResizedDimension(maxWidth, maxHeight, actualWidth, actualHeight, scaleType);
             int desiredHeight = getResizedDimension(maxHeight, maxWidth, actualHeight, actualWidth, scaleType);
 
             decodeOptions.inJustDecodeBounds = false;
+            //<=1按照1,处理,返回原图片的1/decodeOptions.inSampleSize的宽度和高度
             decodeOptions.inSampleSize = findBestSampleSize(actualWidth, actualHeight, desiredWidth, desiredHeight);
             Bitmap tempBitmap = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length, decodeOptions);
 
             if (tempBitmap != null && (tempBitmap.getWidth() > desiredWidth || tempBitmap.getHeight() > desiredHeight)) {
+                //尺寸大于想要的尺寸时进行缩放
                 bitmap = Bitmap.createScaledBitmap(tempBitmap, desiredWidth, desiredHeight, true);
                 tempBitmap.recycle();
             } else {
@@ -89,29 +100,39 @@ public class BitmapConvert implements Converter<Bitmap> {
         return bitmap;
     }
 
-    private static int getResizedDimension(int maxPrimary, int maxSecondary, int actualPrimary, int actualSecondary, ImageView.ScaleType scaleType) {
+    /**
+     * 获取重新调整后尺寸
+     * @param maxPrimary "最大宽度
+     * @param maxSecondary "最大高度
+     * @param actualPrimary "实际宽度
+     * @param actualSecondary "实际高度
+     * @param scaleType "缩放模式
+     * @return "调整后的尺寸
+     */
+    private static int getResizedDimension(int maxPrimary, int maxSecondary, int actualPrimary,
+                                           int actualSecondary, ImageView.ScaleType scaleType) {
 
         // If no dominant value at all, just return the actual.
-        if ((maxPrimary == 0) && (maxSecondary == 0)) {
-            return actualPrimary;
+        if ((maxPrimary == 0) && (maxSecondary == 0)) {//最大宽度高度都为0
+            return actualPrimary;//返回实际宽度
         }
 
         // If ScaleType.FIT_XY fill the whole rectangle, ignore ratio.
         if (scaleType == ImageView.ScaleType.FIT_XY) {
             if (maxPrimary == 0) {
-                return actualPrimary;
+                return actualPrimary;//返回使劲宽度
             } else {
-                return maxPrimary;
+                return maxPrimary;//返回最大宽度
             }
         }
 
         // If primary is unspecified, scale primary to match secondary's scaling ratio.
-        if (maxPrimary == 0) {
-            double ratio = (double) maxSecondary / (double) actualSecondary;
-            return (int) (actualPrimary * ratio);
+        if (maxPrimary == 0) {//最大宽度为0
+            double ratio = (double) maxSecondary / (double) actualSecondary;//最大高度与实际高度的比值
+            return (int) (actualPrimary * ratio);//实际宽度乘以比例
         }
 
-        if (maxSecondary == 0) {
+        if (maxSecondary == 0) {//最大高度为0
             return maxPrimary;
         }
 
@@ -132,10 +153,18 @@ public class BitmapConvert implements Converter<Bitmap> {
         return resized;
     }
 
+    /**
+     * 找到最好的样本大小
+     * @param actualWidth 实际宽度
+     * @param actualHeight 实际高度
+     * @param desiredWidth 想要的宽度
+     * @param desiredHeight 想要的高度
+     * @return "
+     */
     private static int findBestSampleSize(int actualWidth, int actualHeight, int desiredWidth, int desiredHeight) {
         double wr = (double) actualWidth / desiredWidth;
         double hr = (double) actualHeight / desiredHeight;
-        double ratio = Math.min(wr, hr);
+        double ratio = Math.min(wr, hr);//比例
         float n = 1.0f;
         while ((n * 2) <= ratio) {
             n *= 2;

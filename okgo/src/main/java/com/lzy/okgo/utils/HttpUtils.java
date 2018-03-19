@@ -48,7 +48,7 @@ import okhttp3.Response;
  * ================================================
  */
 public class HttpUtils {
-    /** 将传递进来的参数拼接成 url */
+    /** 将传递进来的参数拼接成 明文参数url */
     public static String createUrlFromParams(String url, Map<String, List<String>> params) {
         try {
             StringBuilder sb = new StringBuilder();
@@ -63,6 +63,7 @@ public class HttpUtils {
                     sb.append(urlParams.getKey()).append("=").append(urlValue).append("&");
                 }
             }
+            //拼接结束后删除最后的&符号
             sb.deleteCharAt(sb.length() - 1);
             return sb.toString();
         } catch (UnsupportedEncodingException e) {
@@ -219,6 +220,7 @@ public class HttpUtils {
         return object;
     }
 
+    /**在handler添加的线程运行*/
     public static void runOnUiThread(Runnable runnable) {
         OkGo.getInstance().getDelivery().post(runnable);
     }

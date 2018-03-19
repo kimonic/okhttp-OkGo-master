@@ -92,6 +92,13 @@ public class Progress implements Serializable {
         speedBuffer = new ArrayList<>();
     }
 
+    /**
+     * 改变文件下载进度
+     * @param progress   下载进度类
+     * @param writeSize   写入大小
+     * @param action   活动
+     * @return   下载进度类
+     */
     public static Progress changeProgress(Progress progress, long writeSize, Action action) {
         return changeProgress(progress, writeSize, progress.totalSize, action);
     }
@@ -140,6 +147,9 @@ public class Progress implements Serializable {
         tempSize = progress.tempSize;
     }
 
+    /**
+     * 接口,调用文件下载进度
+     */
     public interface Action {
         void call(Progress progress);
     }

@@ -33,6 +33,7 @@ import okhttp3.Response;
  */
 public abstract class BitmapCallback extends AbsCallback<Bitmap> {
 
+    /**位图转化器*/
     private BitmapConvert convert;
 
     public BitmapCallback() {
@@ -43,10 +44,12 @@ public abstract class BitmapCallback extends AbsCallback<Bitmap> {
         convert = new BitmapConvert(maxWidth, maxHeight);
     }
 
+    /**构造函数,获取指定格式的图片*/
     public BitmapCallback(int maxWidth, int maxHeight, Bitmap.Config decodeConfig, ImageView.ScaleType scaleType) {
         convert = new BitmapConvert(maxWidth, maxHeight, decodeConfig, scaleType);
     }
 
+    /**将响应体转化为图片*/
     @Override
     public Bitmap convertResponse(Response response) throws Throwable {
         Bitmap bitmap = convert.convertResponse(response);

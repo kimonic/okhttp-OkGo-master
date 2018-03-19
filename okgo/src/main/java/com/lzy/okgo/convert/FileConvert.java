@@ -51,6 +51,7 @@ public class FileConvert implements Converter<File> {
         this(null);
     }
 
+    /**构造函数,默认目录名*/
     public FileConvert(String fileName) {
         this(Environment.getExternalStorageDirectory() + DM_TARGET_FOLDER, fileName);
     }
@@ -64,6 +65,12 @@ public class FileConvert implements Converter<File> {
         this.callback = callback;
     }
 
+    /**
+     *
+     * @param response 需要转换的对象  okhttp3
+     * @return  文件
+     * @throws Throwable 异常
+     */
     @Override
     public File convertResponse(Response response) throws Throwable {
         String url = response.request().url().toString();
@@ -73,6 +80,7 @@ public class FileConvert implements Converter<File> {
         File dir = new File(folder);
         IOUtils.createFolder(dir);
         File file = new File(dir, fileName);
+        //删除文件或文件夹
         IOUtils.delFileOrFolder(file);
 
         InputStream bodyStream = null;
@@ -83,6 +91,8 @@ public class FileConvert implements Converter<File> {
             if (body == null) return null;
 
             bodyStream = body.byteStream();
+
+            //初始化progress
             Progress progress = new Progress();
             progress.totalSize = body.contentLength();
             progress.fileName = fileName;
@@ -97,6 +107,7 @@ public class FileConvert implements Converter<File> {
                 fileOutputStream.write(buffer, 0, len);
 
                 if (callback == null) continue;
+                //迭代调用??
                 Progress.changeProgress(progress, len, new Progress.Action() {
                     @Override
                     public void call(Progress progress) {
@@ -112,6 +123,7 @@ public class FileConvert implements Converter<File> {
         }
     }
 
+    /**回调下载进度*/
     private void onProgress(final Progress progress) {
         HttpUtils.runOnUiThread(new Runnable() {
             @Override

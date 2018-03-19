@@ -38,7 +38,7 @@ import okhttp3.Headers;
  */
 public class HeaderParser {
     /**
-     * 根据请求结果生成对应的缓存实体类，以下为缓存相关的响应头
+     * 根据请求结果生成对应的缓存实体类，以下为缓存相关的响应头,包含服务器对本地缓存的控制
      * Cache-Control: public                             响应被缓存，并且在多用户间共享
      * Cache-Control: private                            响应只能作为私有缓存，不能在用户之间共享
      * Cache-Control: no-cache                           提醒浏览器要从服务器提取文档进行验证
@@ -63,13 +63,15 @@ public class HeaderParser {
         if (cacheMode == CacheMode.DEFAULT) {
             long date = HttpHeaders.getDate(responseHeaders.get(HttpHeaders.HEAD_KEY_DATE));
             long expires = HttpHeaders.getExpiration(responseHeaders.get(HttpHeaders.HEAD_KEY_EXPIRES));
-            String cacheControl = HttpHeaders.getCacheControl(responseHeaders.get(HttpHeaders.HEAD_KEY_CACHE_CONTROL), responseHeaders.get(HttpHeaders.HEAD_KEY_PRAGMA));
+            String cacheControl = HttpHeaders.getCacheControl(responseHeaders.get(HttpHeaders.HEAD_KEY_CACHE_CONTROL),
+                    responseHeaders.get(HttpHeaders.HEAD_KEY_PRAGMA));
 
             //没有缓存头控制，不需要缓存
             if (TextUtils.isEmpty(cacheControl) && expires <= 0) return null;
 
             long maxAge = 0;
             if (!TextUtils.isEmpty(cacheControl)) {
+                //字符串分解器，主要用来根据分隔符把字符串分割成标记（Token），然后按照请求返回各个标记
                 StringTokenizer tokens = new StringTokenizer(cacheControl, ",");
                 while (tokens.hasMoreTokens()) {
                     String token = tokens.nextToken().trim().toLowerCase(Locale.getDefault());
@@ -91,6 +93,7 @@ public class HeaderParser {
 
             //获取基准缓存时间，优先使用response中的date头，如果没有就使用本地时间
             long now = System.currentTimeMillis();
+            //header头中指定的缓存开始时间
             if (date > 0) now = date;
 
             if (maxAge > 0) {
@@ -106,6 +109,7 @@ public class HeaderParser {
 
         //将response中所有的头存入 HttpHeaders，原因是写入数据库的对象需要实现序列化，而ok默认的Header没有序列化
         HttpHeaders headers = new HttpHeaders();
+        //遍历响应头中的所有字段
         for (String headerName : responseHeaders.names()) {
             headers.put(headerName, responseHeaders.get(headerName));
         }

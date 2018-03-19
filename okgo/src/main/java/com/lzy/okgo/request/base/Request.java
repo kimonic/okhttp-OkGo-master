@@ -321,6 +321,7 @@ public abstract class Request<T, R extends Request> implements Serializable {
         this.callback = callback;
     }
 
+    /**获取响应体的转换器*/
     public Converter<T> getConverter() {
         // converter 优先级高于 callback
         if (converter == null) converter = callback;

@@ -156,6 +156,7 @@ public class OkGo {
         return context;
     }
 
+    /**获得通信handler*/
     public Handler getDelivery() {
         return mDelivery;
     }

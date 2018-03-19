@@ -37,10 +37,13 @@ public class CacheEntity<T> implements Serializable {
 
     public static final long CACHE_NEVER_EXPIRE = -1;        //缓存永不过期
 
-    //表中的字段
+    //表中的字段,缓存key
     public static final String KEY = "key";
+    //是否到期字段
     public static final String LOCAL_EXPIRE = "localExpire";
+    //响应头字段
     public static final String HEAD = "head";
+    //响应体字段
     public static final String DATA = "data";
 
     private String key;                    // 缓存key
@@ -85,6 +88,10 @@ public class CacheEntity<T> implements Serializable {
         return isExpire;
     }
 
+    /**
+     * 设置缓存是否过期
+     * @param expire  true 过期
+     */
     public void setExpire(boolean expire) {
         isExpire = expire;
     }
@@ -101,6 +108,7 @@ public class CacheEntity<T> implements Serializable {
         return getLocalExpire() + cacheTime < baseTime;
     }
 
+    /**获取缓存实体的内容值*/
     public static <T> ContentValues getContentValues(CacheEntity<T> cacheEntity) {
         ContentValues values = new ContentValues();
         values.put(KEY, cacheEntity.getKey());
@@ -110,6 +118,7 @@ public class CacheEntity<T> implements Serializable {
         return values;
     }
 
+    /**解析缓存数据为缓存实体*/
     public static <T> CacheEntity<T> parseCursorToBean(Cursor cursor) {
         CacheEntity<T> cacheEntity = new CacheEntity<>();
         cacheEntity.setKey(cursor.getString(cursor.getColumnIndex(KEY)));
@@ -120,6 +129,7 @@ public class CacheEntity<T> implements Serializable {
         return cacheEntity;
     }
 
+    /**整个缓存实体的内容*/
     @Override
     public String toString() {
         return "CacheEntity{key='" + key + '\'' + //

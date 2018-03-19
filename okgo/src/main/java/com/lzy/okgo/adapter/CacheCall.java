@@ -38,28 +38,48 @@ import com.lzy.okgo.utils.HttpUtils;
  */
 public class CacheCall<T> implements Call<T> {
 
+    /**
+     * 接口,缓存策略
+     */
     private CachePolicy<T> policy = null;
+    /**
+     * okgo的请求
+     */
     private Request<T, ? extends Request> request;
 
+    /**
+     * 带缓存的请求构造函数
+     *
+     * @param request okgo的请求
+     */
     public CacheCall(Request<T, ? extends Request> request) {
         this.request = request;
         this.policy = preparePolicy();
     }
 
+    /**
+     * 执行网络请求,首先获取本地缓存,传递缓存策略中的缓存实体进行网络请求
+     */
     @Override
     public Response<T> execute() {
         CacheEntity<T> cacheEntity = policy.prepareCache();
         return policy.requestSync(cacheEntity);
     }
 
+    /**
+     * 执行网络请求,首先获取本地缓存,传递缓存策略中的缓存实体进行网络请求
+     * 包含有回调
+     */
     @Override
     public void execute(Callback<T> callback) {
         HttpUtils.checkNotNull(callback, "callback == null");
-
         CacheEntity<T> cacheEntity = policy.prepareCache();
         policy.requestAsync(cacheEntity, callback);
     }
 
+    /**
+     * 初始化缓存策略
+     */
     private CachePolicy<T> preparePolicy() {
         switch (request.getCacheMode()) {
             case DEFAULT:
@@ -85,27 +105,32 @@ public class CacheCall<T> implements Call<T> {
         return policy;
     }
 
+    /**当前网络请求是否已执行*/
     @Override
     public boolean isExecuted() {
         return policy.isExecuted();
     }
 
+    /**取消当前网络请求*/
     @Override
     public void cancel() {
         policy.cancel();
     }
 
+    /**当前网络请求是否已取消*/
     @Override
     public boolean isCanceled() {
         return policy.isCanceled();
     }
 
+    /**返回当前请求的新的CashCall*/
     @SuppressWarnings("CloneDoesntCallSuperClone")
     @Override
     public Call<T> clone() {
         return new CacheCall<>(request);
     }
 
+    /**获取当前okgo的Request*/
     public Request getRequest() {
         return request;
     }

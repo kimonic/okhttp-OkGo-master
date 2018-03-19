@@ -44,7 +44,10 @@ public interface Call<T> {
     /** 是否取消 */
     boolean isCanceled();
 
+
+    /**返回一个新的call*/
     Call<T> clone();
 
+    /**获取当前请求的okgoRequest*/
     Request getRequest();
 }
