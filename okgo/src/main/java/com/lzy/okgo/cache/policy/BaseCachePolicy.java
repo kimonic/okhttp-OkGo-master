@@ -77,6 +77,7 @@ public abstract class BaseCachePolicy<T> implements CachePolicy<T> {
             //noinspection unchecked
             cacheEntity = (CacheEntity<T>) CacheManager.getInstance().get(request.getCacheKey());
             HeaderParser.addCacheHeaders(request, cacheEntity, cacheMode);
+            //检查缓存是否过期
             if (cacheEntity != null && cacheEntity.checkExpire(cacheMode, request.getCacheTime(), System.currentTimeMillis())) {
                 cacheEntity.setExpire(true);
             }
