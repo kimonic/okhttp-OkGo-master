@@ -87,6 +87,7 @@ public class DefaultCachePolicy<T> extends BaseCachePolicy<T> {
         return true;
     }
 
+    /**发起网络请求,同步*/
     @Override
     public Response<T> requestSync(CacheEntity<T> cacheEntity) {
         try {
@@ -106,6 +107,7 @@ public class DefaultCachePolicy<T> extends BaseCachePolicy<T> {
         return response;
     }
 
+    /**发起网络请求,异步*/
     @Override
     public void requestAsync(CacheEntity<T> cacheEntity, Callback<T> callback) {
         mCallback = callback;

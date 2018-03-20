@@ -211,6 +211,7 @@ public abstract class BodyRequest<T, R extends BodyRequest> extends Request<T, R
         return HttpUtils.generateMultipartRequestBody(params, isMultipart);
     }
 
+    /**生成请求建造者*/
     protected okhttp3.Request.Builder generateRequestBuilder(RequestBody requestBody) {
         try {
             headers(HttpHeaders.HEAD_KEY_CONTENT_LENGTH, String.valueOf(requestBody.contentLength()));

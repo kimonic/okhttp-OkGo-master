@@ -293,6 +293,7 @@ public abstract class Request<T, R extends Request> implements Serializable {
         return tag;
     }
 
+    /**获取缓存策略*/
     public CacheMode getCacheMode() {
         return cacheMode;
     }

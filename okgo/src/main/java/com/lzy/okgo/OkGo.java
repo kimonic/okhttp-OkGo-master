@@ -49,16 +49,21 @@ import okhttp3.OkHttpClient;
  * 版    本：1.0
  * 创建日期：2016/1/12
  * 描    述：网络请求的入口类
+ *
+ * okgo网络框架架构思路
+ *
+ * okgo类负责构建相关初始化参数
+ * Request类负责构建请求参数
+ * Request的execute(Callback<T> callback)方法提交请求时,构建call接口的实现CacheCall<T>
+ *     后根据相关参数初始化缓存,以及回调的处理策略,然后是根据参数构建出BaseCachePolicy的先关子类
+ *     的实现回调策略类后发起okhttp3的网络请求,然后在okhttp3 的回调中根据具体策略处理缓存以及调用
+ *     okgo 的callback将结果回传
  * 修订历史：
  * ================================================
  */
 public class OkGo {
     public static final long DEFAULT_MILLISECONDS = 60000;      //默认的超时时间
     public static long REFRESH_TIME = 300;                      //回调刷新时间（单位ms）
-
-
-
-
     private Application context;            //全局上下文
     private Handler mDelivery;              //用于在主线程执行的调度器
     private OkHttpClient okHttpClient;      //ok请求的客户端
@@ -69,6 +74,7 @@ public class OkGo {
     private long mCacheTime;                //全局缓存过期时间,默认永不过期
 
     private OkGo() {
+        //用主线程的Looper构造Handler
         mDelivery = new Handler(Looper.getMainLooper());
         mRetryCount = 3;
         mCacheTime = CacheEntity.CACHE_NEVER_EXPIRE;

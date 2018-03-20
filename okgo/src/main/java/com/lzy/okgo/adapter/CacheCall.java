@@ -32,7 +32,7 @@ import com.lzy.okgo.utils.HttpUtils;
  * 作    者：jeasonlzy（廖子尧）Github地址：https://github.com/jeasonlzy
  * 版    本：1.0
  * 创建日期：2016/9/11
- * 描    述：带缓存的请求
+ * 描    述：带缓存的缓存策略回调请求
  * 修订历史：
  * ================================================
  */

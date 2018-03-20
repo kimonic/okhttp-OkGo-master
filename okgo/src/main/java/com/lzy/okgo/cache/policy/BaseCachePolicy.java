@@ -159,7 +159,7 @@ public abstract class BaseCachePolicy<T> implements CachePolicy<T> {
         }
     }
 
-    /**发起网络请求*/
+    /**发起网络请求,真正由okhttp3发起的网络请求*/
     protected void requestNetworkAsync() {
         /**将网络请求添加到请求队列中,一般会立即执行请求,除非当前队列有其他请求正在执行*/
         rawCall.enqueue(new okhttp3.Callback() {
